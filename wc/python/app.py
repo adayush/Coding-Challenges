@@ -1,4 +1,3 @@
-import os
 import sys
 
 
@@ -12,33 +11,32 @@ def parse_args(args) -> dict:
             filename = arg
             break
 
-
     return {"flags": flags, "filename": filename}
 
 
 def count_bytes(text) -> int:
-    count = len(text.encode("utf8"))
+    count = len(text.encode("utf-8"))
 
     return count
 
 
 def count_lines(text) -> int:
-    count = sum(1 for _ in text.split('\n'))
+    count = text.count("\n")
+
     return count
 
 
 def count_words(text) -> int:
     count = 0
-    for line in text.split('\n'):
+    for line in text.split("\n"):
         count += len(line.split())
-    
+
     return count
 
 
 def count_chars(text) -> int:
-    count = 0
-    for line in text.split('\n'):
-        count += len(line) + 1
+    count = len(text)
+
     return count
 
 
@@ -51,7 +49,8 @@ def main() -> None:
 
     if filename:
         try:
-            text = open(filename).read()
+            # windows newline is \r\n but macos uses \n. test.tx uses the former
+            text = open(filename, newline="\r\n").read()
         except FileNotFoundError:
             print("Error: file not found")
             return
@@ -76,13 +75,14 @@ def main() -> None:
             continue
 
         output.append(tools[flag](text))
-    
+
     output.sort()
 
     for result in output:
         print(f"{result:<8}", end="")
-    
+
     print(filename)
+
 
 if __name__ == "__main__":
     main()
